@@ -1,11 +1,1041 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shortly</title>
-</head>
-<body>
-    <h1>Hello world !!!</h1>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Shortly — Precision URL Shortener</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- modern font stack: Inter for UI, Space Grotesk for headings, monospace for technical -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ---------- RESET & VARIABLES (modern: neutral dark with crisp accents) ---------- */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #0a0c10;
+        --surface-1: #101218;
+        --surface-2: #171b24;
+        --card-bg: #11141c;
+        --elevated: #1a1f2a;
+        --border-subtle: #232833;
+        --border-active: #3a4050;
+        --text-primary: #f0f2f5;
+        --text-secondary: #9aa3b9;
+        --text-muted: #5f6a7e;
+        --accent: #2f9bff;
+        --accent-glow: rgba(47, 155, 255, 0.2);
+        --accent-hover: #5bb0ff;
+        --success: #10b981;
+        --success-glow: rgba(16, 185, 129, 0.15);
+        --error: #f9735c;
+        --error-glow: rgba(249, 115, 92, 0.15);
+        --gradient-1: linear-gradient(135deg, #2f9bff, #8b5cf6);
+        --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+        --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+        --transition: all 0.2s ease;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text-primary);
+        font-family: "Inter", sans-serif;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+
+      /* subtle grid pattern (professional) */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(var(--border-subtle) 0.5px, transparent 0.5px),
+          linear-gradient(90deg, var(--border-subtle) 0.5px, transparent 0.5px);
+        background-size: 48px 48px;
+        opacity: 0.2;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* smooth scroll behavior */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* ---------- custom cursor (clean, minimal) ---------- */
+      #cursor-dot {
+        position: fixed;
+        width: 6px;
+        height: 6px;
+        background: var(--accent);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        transition:
+          width 0.2s,
+          height 0.2s,
+          background 0.2s;
+        filter: blur(0px);
+      }
+
+      #cursor-ring {
+        position: fixed;
+        width: 32px;
+        height: 32px;
+        border: 1px solid rgba(47, 155, 255, 0.4);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9998;
+        transform: translate(-50%, -50%);
+        transition:
+          width 0.25s,
+          height 0.25s,
+          border-color 0.2s;
+      }
+
+      /* interactive cursor scale */
+      a:hover ~ #cursor-dot,
+      button:hover ~ #cursor-dot,
+      .clickable:hover ~ #cursor-dot,
+      a:hover + #cursor-dot,
+      button:hover + #cursor-dot {
+        width: 12px;
+        height: 12px;
+        background: var(--accent);
+      }
+
+      /* ---------- layout containers ---------- */
+      .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 2;
+      }
+
+      /* navigation */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        backdrop-filter: blur(20px);
+        background: rgba(10, 12, 16, 0.8);
+        border-bottom: 1px solid var(--border-subtle);
+        z-index: 100;
+        padding: 1rem 0;
+      }
+
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+
+      .logo {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700;
+        font-size: 1.6rem;
+        letter-spacing: -0.02em;
+        background: var(--gradient-1);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        text-decoration: none;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+      }
+
+      .nav-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: var(--transition);
+      }
+
+      .nav-links a:hover {
+        color: var(--accent);
+      }
+
+      .btn-outline-light {
+        padding: 0.5rem 1.2rem;
+        border: 1px solid var(--border-active);
+        border-radius: 40px;
+        font-weight: 600;
+        background: transparent;
+        color: var(--text-primary);
+        transition: var(--transition);
+      }
+
+      .btn-outline-light:hover {
+        border-color: var(--accent);
+        background: rgba(47, 155, 255, 0.08);
+        color: var(--accent);
+      }
+
+      /* hero section */
+      .hero {
+        padding-top: 8rem;
+        padding-bottom: 2rem;
+        text-align: center;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(47, 155, 255, 0.1);
+        backdrop-filter: blur(4px);
+        padding: 0.4rem 1rem;
+        border-radius: 100px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--accent);
+        border: 1px solid rgba(47, 155, 255, 0.2);
+        margin-bottom: 2rem;
+      }
+
+      .hero h1 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: clamp(3rem, 8vw, 5.5rem);
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+      }
+
+      .hero .gradient-text {
+        background: var(--gradient-1);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero-description {
+        max-width: 560px;
+        margin: 0 auto;
+        color: var(--text-secondary);
+        font-size: 1.05rem;
+      }
+
+      /* card & form */
+      .form-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-subtle);
+        border-radius: 32px;
+        padding: 2rem;
+        margin: 2rem 0 1.5rem;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+      }
+
+      .input-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .input-wrapper {
+        flex: 1;
+        position: relative;
+      }
+
+      .input-wrapper input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 2.8rem;
+        background: var(--surface-2);
+        border: 1.5px solid var(--border-subtle);
+        border-radius: 20px;
+        color: var(--text-primary);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.9rem;
+        transition: var(--transition);
+        outline: none;
+      }
+
+      .input-wrapper input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+      }
+
+      .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 1rem;
+        color: var(--text-muted);
+        font-size: 1.1rem;
+      }
+
+      .shorten-btn {
+        background: var(--gradient-1);
+        border: none;
+        padding: 0 2rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-family: "Inter", sans-serif;
+        font-size: 0.95rem;
+        color: white;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+        box-shadow: 0 2px 6px rgba(47, 155, 255, 0.2);
+      }
+
+      .shorten-btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.05);
+        box-shadow: 0 8px 20px rgba(47, 155, 255, 0.3);
+      }
+
+      .shorten-btn:active {
+        transform: translateY(0);
+      }
+
+      .result-box {
+        margin-top: 1.5rem;
+        background: var(--surface-1);
+        border-radius: 20px;
+        padding: 1rem 1.2rem;
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        border-left: 4px solid var(--success);
+        animation: fadeSlide 0.25s ease;
+      }
+
+      @keyframes fadeSlide {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .result-box.show {
+        display: flex;
+      }
+      .result-box.error {
+        border-left-color: var(--error);
+      }
+
+      .result-url {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.9rem;
+        color: var(--success);
+        word-break: break-all;
+      }
+
+      .error .result-url {
+        color: var(--error);
+      }
+
+      .copy-btn {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 40px;
+        padding: 0.4rem 1rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--success);
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .copy-btn:hover {
+        background: rgba(16, 185, 129, 0.2);
+        transform: scale(0.98);
+      }
+
+      .form-hint {
+        margin-top: 1rem;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-align: center;
+      }
+
+      /* stats row modern */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: var(--border-subtle);
+        border-radius: 32px;
+        overflow: hidden;
+        margin: 3rem 0;
+      }
+
+      .stat-card {
+        background: var(--surface-1);
+        padding: 1.8rem;
+        text-align: center;
+      }
+
+      .stat-number {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 2.6rem;
+        font-weight: 700;
+        color: var(--accent);
+        line-height: 1;
+      }
+
+      .stat-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+      }
+
+      /* section styles */
+      .section-header {
+        text-align: center;
+        margin-bottom: 3.5rem;
+      }
+
+      .section-subhead {
+        color: var(--accent);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.75rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .section-header h2 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: clamp(2rem, 4vw, 2.8rem);
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+
+      .grid-3,
+      .grid-2 {
+        display: grid;
+        gap: 2rem;
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .step-card,
+      .feature-card {
+        background: var(--surface-1);
+        border: 1px solid var(--border-subtle);
+        border-radius: 28px;
+        padding: 1.8rem;
+        transition: var(--transition);
+      }
+
+      .step-card:hover,
+      .feature-card:hover {
+        border-color: var(--border-active);
+        transform: translateY(-4px);
+        background: var(--elevated);
+      }
+
+      .step-number {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 3rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+
+      .step-title {
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin: 0.5rem 0;
+      }
+
+      .feature-icon {
+        font-size: 1.8rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .feature-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .feature-desc,
+      .step-desc {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        line-height: 1.5;
+      }
+
+      /* CTA */
+      .cta-card {
+        background: linear-gradient(145deg, #0f1320, #0a0d14);
+        border: 1px solid var(--border-active);
+        border-radius: 48px;
+        padding: 3.5rem 2rem;
+        text-align: center;
+        margin: 4rem 0;
+      }
+
+      .cta-card h3 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 2rem;
+        font-weight: 600;
+      }
+
+      .btn-primary {
+        background: var(--gradient-1);
+        padding: 0.9rem 2.2rem;
+        border-radius: 40px;
+        font-weight: 600;
+        border: none;
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+        transition: var(--transition);
+        margin-top: 1rem;
+      }
+
+      .btn-primary:hover {
+        transform: scale(1.02);
+        box-shadow: 0 6px 20px rgba(47, 155, 255, 0.4);
+      }
+
+      /* footer */
+      footer {
+        border-top: 1px solid var(--border-subtle);
+        padding: 2rem 0;
+        margin: 2rem;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 2rem;
+      }
+
+      .footer-links a {
+        color: var(--text-muted);
+        text-decoration: none;
+      }
+
+      /* progress bar */
+      .progress-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 3px;
+        background: var(--gradient-1);
+        width: 0%;
+        z-index: 200;
+        transition: width 0.08s linear;
+      }
+
+      /* responsive */
+      @media (max-width: 760px) {
+        .container {
+          padding: 0 1.25rem;
+        }
+        .nav-inner {
+          padding: 0 1.25rem;
+        }
+        .grid-3,
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+        .input-group {
+          flex-direction: column;
+        }
+        .shorten-btn {
+          justify-content: center;
+          padding: 1rem;
+        }
+        .stats-row {
+          grid-template-columns: 1fr;
+          gap: 1px;
+          border-radius: 24px;
+        }
+      }
+
+      /* scroll reveal (class added via intersection observer) */
+      .reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+          opacity 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1),
+          transform 0.6s ease;
+      }
+
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <nav>
+      <div class="nav-inner">
+        <a href="#" class="logo">Shortly</a>
+        <div class="nav-links">
+          <a href="#how-it-works">Process</a>
+          <a href="#features">Features</a>
+          <a href="#cta-section" class="btn-outline-light">Get Started</a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <div class="container">
+        <!-- Hero -->
+        <div class="hero">
+          <span class="badge">⚡ Precision shortening · 2025 edition</span>
+          <h1>
+            Links that fit<br /><span class="gradient-text"
+              >anywhere, instantly.</span
+            >
+          </h1>
+          <p class="hero-description">
+            Clean, trackable, and blazing fast. Shortly transforms long URLs into
+            sleek short links without friction.
+          </p>
+        </div>
+
+        <!-- Shortener widget -->
+        <div class="form-card">
+          <div class="input-group">
+            <div class="input-wrapper">
+              <span class="input-icon">🔗</span>
+              <input
+                type="url"
+                id="longUrlInput"
+                placeholder="Paste your long URL ... https://example.com/very/long/path"
+              />
+            </div>
+            <button class="shorten-btn" id="shortenAction">
+              <span>Shorten</span>
+              <span>→</span>
+            </button>
+          </div>
+          <div class="result-box" id="resultContainer">
+            <span class="result-url" id="resultLink"></span>
+            <button class="copy-btn" id="copyResultBtn">Copy</button>
+          </div>
+          <p class="form-hint">
+            No signup required · Secure redirects · Real-time links
+          </p>
+        </div>
+
+        <!-- Stats with dynamic counters -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-number" data-count="247" data-suffix="M">0</div>
+            <div class="stat-label">Links shortened</div>
+          </div>
+          <div class="stat-card">
+            <div
+              class="stat-number"
+              data-count="99.95"
+              data-suffix="%"
+              data-decimal="true"
+            >
+              0
+            </div>
+            <div class="stat-label">Uptime reliability</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" data-count="189" data-suffix="">0</div>
+            <div class="stat-label">Countries active</div>
+          </div>
+        </div>
+
+        <!-- How it works -->
+        <div id="how-it-works">
+          <div class="section-header reveal">
+            <div class="section-subhead">Streamlined workflow</div>
+            <h2>Shorten in seconds.<br />Share everywhere.</h2>
+          </div>
+          <div class="grid-3">
+            <div class="step-card reveal">
+              <div class="step-number">01</div>
+              <div class="step-title">Paste & optimize</div>
+              <div class="step-desc">
+                Insert any long link — our smart parser handles protocol
+                adjustments.
+              </div>
+            </div>
+            <div class="step-card reveal">
+              <div class="step-number">02</div>
+              <div class="step-title">Generate short link</div>
+              <div class="step-desc">
+                One click creates a unique, compact URL ready for any audience.
+              </div>
+            </div>
+            <div class="step-card reveal">
+              <div class="step-number">03</div>
+              <div class="step-title">Copy & share</div>
+              <div class="step-desc">
+                Instant copy to clipboard; share on social, emails, or docs.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Features -->
+        <div id="features">
+          <div class="section-header reveal">
+            <div class="section-subhead">Engineered for reliability</div>
+            <h2>Built for modern teams.</h2>
+          </div>
+          <div class="grid-2">
+            <div class="feature-card reveal">
+              <div class="feature-icon">📊</div>
+              <div class="feature-title">Smart analytics</div>
+              <div class="feature-desc">
+                View click volumes, referrer insights, and geographic trends.
+              </div>
+            </div>
+            <div class="feature-card reveal">
+              <div class="feature-icon">🔒</div>
+              <div class="feature-title">Secure by design</div>
+              <div class="feature-desc">
+                Malware scanning, encrypted redirection, and privacy first.
+              </div>
+            </div>
+            <div class="feature-card reveal">
+              <div class="feature-icon">⚡</div>
+              <div class="feature-title">Edge network</div>
+              <div class="feature-desc">
+                Sub-15ms latency worldwide with automatic failover.
+              </div>
+            </div>
+            <div class="feature-card reveal">
+              <div class="feature-icon">✏️</div>
+              <div class="feature-title">Custom slugs</div>
+              <div class="feature-desc">
+                Branded short links (e.g., snip.io/your-brand) available.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA section -->
+        <div id="cta-section">
+          <div class="cta-card reveal">
+            <h3>Ready to streamline your links?</h3>
+            <p style="color: var(--text-secondary); margin-top: 0.5rem">
+              Join thousands of creators who shorten smarter.
+            </p>
+            <a href="#" class="btn-primary" id="ctaScrollBtn"
+              >Shorten your first link →</a
+            >
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div>© 2025 Shortly — modern URL toolkit</div>
+      <div>Authors - Debottam,Shubhranil,Gagan</div>
+      <div class="footer-links Author-links">
+        <a href="https://github.com/Debottam2003" target="">Debottam (Github)</a>
+        <a href="https://github.com/Shubh-2025" target="">Shubhranil (Github)</a>
+        <a href="https://github.com/Gaganandra-Mondal" target="">Gagan (Github)</a>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        // ---------- CUSTOM CURSOR (smooth) ----------
+        const cursorDot = document.getElementById("cursor-dot");
+        const cursorRing = document.getElementById("cursor-ring");
+        let mouseX = 0,
+          mouseY = 0;
+        let ringX = 0,
+          ringY = 0;
+
+        document.addEventListener("mousemove", (e) => {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+          cursorDot.style.left = mouseX + "px";
+          cursorDot.style.top = mouseY + "px";
+        });
+
+        function animateRing() {
+          ringX += (mouseX - ringX) * 0.12;
+          ringY += (mouseY - ringY) * 0.12;
+          cursorRing.style.left = ringX + "px";
+          cursorRing.style.top = ringY + "px";
+          requestAnimationFrame(animateRing);
+        }
+        animateRing();
+
+        // interactive hover for buttons/links
+        const interactiveElems = document.querySelectorAll(
+          "a, button, .shorten-btn, .copy-btn, .btn-primary",
+        );
+        interactiveElems.forEach((el) => {
+          el.addEventListener("mouseenter", () => {
+            cursorDot.style.width = "12px";
+            cursorDot.style.height = "12px";
+            cursorRing.style.width = "44px";
+            cursorRing.style.height = "44px";
+            cursorRing.style.borderColor = "rgba(47, 155, 255, 0.8)";
+          });
+          el.addEventListener("mouseleave", () => {
+            cursorDot.style.width = "6px";
+            cursorDot.style.height = "6px";
+            cursorRing.style.width = "32px";
+            cursorRing.style.height = "32px";
+            cursorRing.style.borderColor = "rgba(47, 155, 255, 0.4)";
+          });
+        });
+
+        // progress bar on scroll
+        const progressBar = document.getElementById("progressBar");
+        window.addEventListener("scroll", () => {
+          const winScroll = document.documentElement.scrollTop;
+          const height =
+            document.documentElement.scrollHeight - window.innerHeight;
+          const scrolled = (winScroll / height) * 100;
+          progressBar.style.width = scrolled + "%";
+        });
+
+        // Intersection Observer for reveal animations
+        const revealItems = document.querySelectorAll(".reveal");
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+              }
+            });
+          },
+          { threshold: 0.1, rootMargin: "0px 0px -60px 0px" },
+        );
+        revealItems.forEach((el) => observer.observe(el));
+
+        // ---------- STATS COUNTER (smooth) ----------
+        const statNumbers = document.querySelectorAll(".stat-number");
+        const countObserver = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const el = entry.target;
+                const rawTarget = el.getAttribute("data-count");
+                const isDecimal = el.getAttribute("data-decimal") === "true";
+                const suffix = el.getAttribute("data-suffix") || "";
+                let target = parseFloat(rawTarget);
+                if (isNaN(target)) target = 0;
+                let current = 0;
+                const duration = 1600;
+                const stepTime = 16;
+                const steps = duration / stepTime;
+                let increment = target / steps;
+                let interval = setInterval(() => {
+                  current += increment;
+                  if (current >= target) {
+                    current = target;
+                    el.textContent = isDecimal
+                      ? current.toFixed(1) + suffix
+                      : Math.floor(current) + suffix;
+                    clearInterval(interval);
+                  } else {
+                    el.textContent = isDecimal
+                      ? current.toFixed(1) + suffix
+                      : Math.floor(current) + suffix;
+                  }
+                }, stepTime);
+                obs.unobserve(el);
+              }
+            });
+          },
+          { threshold: 0.5 },
+        );
+        statNumbers.forEach((el) => countObserver.observe(el));
+
+        // ---------- URL SHORTENER LOGIC (local simulation) ----------
+        const urlInput = document.getElementById("longUrlInput");
+        const shortenBtn = document.getElementById("shortenAction");
+        const resultContainer = document.getElementById("resultContainer");
+        const resultLinkSpan = document.getElementById("resultLink");
+        const copyBtn = document.getElementById("copyResultBtn");
+
+        let storedShort = "";
+
+        function generateShortCode() {
+          const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+          let code = "";
+          for (let i = 0; i < 7; i++) {
+            code += chars[Math.floor(Math.random() * chars.length)];
+          }
+          return code;
+        }
+
+        function isValidUrl(str) {
+          try {
+            const url = new URL(str);
+            return url.protocol === "http:" || url.protocol === "https:";
+          } catch (e) {
+            return false;
+          }
+        }
+
+        function showError(message) {
+          resultContainer.classList.add("show", "error");
+          resultLinkSpan.textContent = message;
+          resultLinkSpan.classList.add("error");
+          copyBtn.style.display = "none";
+          resultContainer.classList.remove("success");
+        }
+
+        function resetResult() {
+          resultContainer.classList.remove("show", "error", "success");
+          resultLinkSpan.classList.remove("error");
+          copyBtn.style.display = "flex";
+        }
+
+        function shortenUrl() {
+          const longUrl = urlInput.value.trim();
+          if (!longUrl) {
+            showError("❌ Please enter a valid URL");
+            return;
+          }
+          if (!isValidUrl(longUrl)) {
+            showError("⚠️ Use http:// or https:// format");
+            return;
+          }
+
+          // loading state behavior (visual feedback)
+          shortenBtn.style.opacity = "0.8";
+          shortenBtn.textContent = "Processing...";
+          setTimeout(() => {
+            const code = generateShortCode();
+            const shortUrl = `https://shortly.io/${code}`;
+            storedShort = shortUrl;
+            resultLinkSpan.textContent = shortUrl;
+            resultLinkSpan.classList.remove("error");
+            resultContainer.classList.remove("error");
+            resultContainer.classList.add("show", "success");
+            copyBtn.style.display = "inline-flex";
+            copyBtn.textContent = "Copy";
+            copyBtn.classList.remove("copied");
+            // reset button
+            shortenBtn.style.opacity = "1";
+            shortenBtn.innerHTML = "<span>Shorten</span><span>→</span>";
+            urlInput.style.borderColor = "var(--success)";
+            setTimeout(() => {
+              urlInput.style.borderColor = "";
+            }, 800);
+          }, 550);
+        }
+
+        function copyShortUrl() {
+          if (!storedShort) {
+            const currentText = resultLinkSpan.textContent;
+            if (
+              currentText &&
+              !currentText.includes("❌") &&
+              !currentText.includes("⚠️") &&
+              currentText.startsWith("https")
+            ) {
+              storedShort = currentText;
+            } else {
+              return;
+            }
+          }
+          navigator.clipboard
+            .writeText(storedShort)
+            .then(() => {
+              copyBtn.textContent = "✓ Copied!";
+              copyBtn.classList.add("copied");
+              setTimeout(() => {
+                copyBtn.textContent = "Copy";
+                copyBtn.classList.remove("copied");
+              }, 1800);
+            })
+            .catch(() => {
+              alert("Manual copy: " + storedShort);
+            });
+        }
+
+        shortenBtn.addEventListener("click", shortenUrl);
+        copyBtn.addEventListener("click", copyShortUrl);
+        urlInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") shortenUrl();
+        });
+
+        // smooth scroll for cta button and nav
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+          anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute("href");
+            if (targetId === "#") return;
+            const targetEl = document.querySelector(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else if (targetId === "#cta-section") {
+              document
+                .getElementById("cta-section")
+                ?.scrollIntoView({ behavior: "smooth" });
+            } else if (targetId === "#how-it-works") {
+              document
+                .getElementById("how-it-works")
+                ?.scrollIntoView({ behavior: "smooth" });
+            } else if (targetId === "#features") {
+              document
+                .getElementById("features")
+                ?.scrollIntoView({ behavior: "smooth" });
+            }
+          });
+        });
+
+        document
+          .getElementById("ctaScrollBtn")
+          ?.addEventListener("click", (e) => {
+            e.preventDefault();
+            document
+              .querySelector(".form-card")
+              ?.scrollIntoView({ behavior: "smooth" });
+          });
+      })();
+    </script>
+  </body>
 </html>
