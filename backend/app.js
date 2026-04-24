@@ -27,8 +27,9 @@ app.get('/', (req, res) => {
 
 app.post('/shorten', async (req, res) => {
     const { longUrl } = req.body;
+    const shortId = "";
     while (true) {
-        const shortId = randomPassword(6);
+        shortId = randomPassword(6);
         const data = await client.get(shortId);
         if (!data) {
             break;
