@@ -1,4 +1,15 @@
 {
+  "name": "url_shortener",
+  "version": "1.0.0",
+  "description": "backend server for our url shortener app",
+  "license": "ISC",
+  "author": "Shubhranil, Debottam, Gaganendra.",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "chatu",
+    "dev": "nodemon app.js"
+  },
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.2.1",
