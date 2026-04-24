@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
 
 app.post('/shorten', async (req, res) => {
     const { longUrl } = req.body;
-    const shortId = "";
+    let shortId = "";
     while (true) {
         shortId = randomPassword(6);
         const data = await client.get(shortId);
@@ -36,7 +36,7 @@ app.post('/shorten', async (req, res) => {
         }
     }
     await client.set(shortId, longUrl);
-    res.json({ shortUrl: `http://${req.headers.host.split(":")[0]}/${shortId}` });
+    res.json({ shortUrl: `http://${req.headers.host.split(":")[0]}:${PORT}/${shortId}` });
 });
 
 app.get('/:shortId', async (req, res) => {
