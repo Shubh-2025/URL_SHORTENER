@@ -2,12 +2,14 @@ import express from "express"
 import dotenv from "dotenv"
 import cors from "cors"
 import { fileURLToPath } from 'url';
-// import db from "./db.js"
-
+import client from "./db.js"
+import { randomPassword } from "chatujs";
+import path from "path";
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT;
+console.log("PORT:", PORT);
 
 app.use(express.json());
 app.use(cors());
@@ -21,6 +23,29 @@ app.use(express.static(path.join(__dirname, 'frontend')));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+});
+
+app.post('/shorten', async (req, res) => {
+    const { longUrl } = req.body;
+    while (true) {
+        const shortId = randomPassword(6);
+        const data = await client.get(shortId);
+        if (!data) {
+            break;
+        }
+    }
+    await client.set(shortId, longUrl);
+    res.json({ shortUrl: `http://${req.headers.host.split(":")[0]}/${shortId}` });
+});
+
+app.get('/:shortId', async (req, res) => {
+    const { shortId } = req.params;
+    const longUrl = await client.get(shortId);
+    if (longUrl) {
+        res.redirect(longUrl);
+    } else {
+        res.status(404).json({ error: "URL not found" });
+    }
 });
 
 app.listen(PORT, () => {
