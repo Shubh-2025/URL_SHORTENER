@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 // import client from "./db.js"
 import { randomPassword } from "chatujs";
 import path from "path";
+import fs from "node:fs/promises";
 
 dotenv.config();
 const app = express();
@@ -40,7 +41,7 @@ app.post('/shorten', async (req, res) => {
     }
     // await client.set(shortId, longUrl);
     map.set(shortId, longUrl);
-    res.json({ shortUrl: `http://${req.headers.host.split(":")[0]}:${PORT}/${shortId}` });
+    res.status(200).json({ shortUrl: `http://${req.headers.host.split(":")[0]}:${PORT}/${shortId}` });
 });
 
 app.get('/:shortId', async (req, res) => {
@@ -51,6 +52,26 @@ app.get('/:shortId', async (req, res) => {
         res.redirect(longUrl);
     } else {
         res.status(404).json({ error: "URL not found" });
+    }
+});
+
+setInterval(async () => {
+    try {
+        await fs.writeFile('total.txt', JSON.stringify([...map]), 'utf8');
+    } catch (err) {
+        console.error('Append failed:', err);
+    }
+}, 10000);
+
+app.get('/total', async (req, res) => {
+    try {
+        const data = await fs.readFile('total.txt', 'utf8');
+        const entries = JSON.parse(data);
+        const total = entries.length;
+        res.status(200).json({ total: total });
+    } catch (err) {
+        console.error('Read failed:', err);
+        res.status(500).json({ error: 'Failed to read total count' });
     }
 });
 
