@@ -11,10 +11,15 @@ let map = "";
 try {
     const data = await fs.readFile('total.txt', 'utf8');
     const entries = JSON.parse(data);
-    map = new Map(entries);
+    if (Array.isArray(entries)) {
+        map = new Map(entries);
+    } else {
+        console.error('Data format is incorrect. Expected an array of entries.');
+        map = new Map();
+    }
 } catch (err) {
     console.error('Read failed:', err);
-    map = new Map();
+    process.exit(1);
 }
 
 dotenv.config();
