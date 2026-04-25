@@ -41,7 +41,7 @@
 |---|---|
 | **Backend** | ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white) ![Express.js](https://img.shields.io/badge/Express.js-000000?style=flat&logo=express&logoColor=white) |
 | **Frontend** | ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black) |
-| **Database** | ![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=flat&logo=mongodb&logoColor=white) |
+| **Database** | ![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat&logo=redis&logoColor=white) |
 | **Hosting** | ![Render](https://img.shields.io/badge/Render-46E3B7?style=flat&logo=render&logoColor=white) |
 
 ---
@@ -124,6 +124,6 @@ Made with ❤️ by a team of three:
 
 <div align="center">
 
-© 2025 Shortly — Modern URL Toolkit &nbsp;|&nbsp; Version 0.0.1
+© 2026 Shortly — Modern URL Toolkit &nbsp;|&nbsp; Version 0.0.1
 
 </div>
