@@ -40,7 +40,7 @@ app.post('/shorten', async (req, res) => {
     const { longUrl } = req.body;
     let shortId = "";
     while (true) {
-        shortId = randomPassword(6);
+        shortId = randomPassword(8);
         // const data = await client.get(shortId);
         const data = map.has(shortId);
         if (!data) {
@@ -70,7 +70,7 @@ setInterval(async () => {
     } catch (err) {
         console.error('Append failed:', err);
     }
-}, 10000);
+}, 30000);
 
 app.get('/total', async (req, res) => {
     try {
