@@ -906,15 +906,16 @@
 
         let storedShort = "";
 
-        function generateShortCode() {
-          const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-          let code = "";
-          for (let i = 0; i < 7; i++) {
-            code += chars[Math.floor(Math.random() * chars.length)];
-          }
-          return code;
-        }
+        // function generateShortCode() {
+        //   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+        //   let code = "";
+        //   for (let i = 0; i < 7; i++) {
+        //     code += chars[Math.floor(Math.random() * chars.length)];
+        //   }
+        //   return code;
+        // }
 
+        // validate URL format (basic check)
         function isValidUrl(str) {
           try {
             const url = new URL(str);
@@ -924,6 +925,7 @@
           }
         }
 
+        // show error message in result box
         function showError(message) {
           resultContainer.classList.add("show", "error");
           resultLinkSpan.textContent = message;
@@ -932,13 +934,8 @@
           resultContainer.classList.remove("success");
         }
 
-        function resetResult() {
-          resultContainer.classList.remove("show", "error", "success");
-          resultLinkSpan.classList.remove("error");
-          copyBtn.style.display = "flex";
-        }
-
-        function shortenUrl() {
+        // main function to handle URL shortening
+        async function shortenUrl() {
           const longUrl = urlInput.value.trim();
           if (!longUrl) {
             showError("❌ Please enter a valid URL");
@@ -952,56 +949,53 @@
           // loading state behavior (visual feedback)
           shortenBtn.style.opacity = "0.8";
           shortenBtn.textContent = "Processing...";
-          setTimeout(() => {
-            const code = generateShortCode();
-            const shortUrl = `https://shortly.io/${code}`;
-            storedShort = shortUrl;
-            resultLinkSpan.textContent = shortUrl;
-            resultLinkSpan.classList.remove("error");
-            resultContainer.classList.remove("error");
-            resultContainer.classList.add("show", "success");
-            copyBtn.style.display = "inline-flex";
-            copyBtn.textContent = "Copy";
-            copyBtn.classList.remove("copied");
-            // reset button
+          try {
+            let response = await fetch("/shorten", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ longUrl: longUrl }),
+            });
+            if (!response.ok) {
+              const errorData = await response.json();
+              showError(errorData.error || "Server error. Try again.");
+              shortenBtn.style.opacity = "1";
+              shortenBtn.textContent = "Shorten";
+              return;
+            } else {
+              const data = await response.json();
+              storedShort = data.shortUrl;
+              resultLinkSpan.textContent = storedShort;
+              resultContainer.classList.add("show", "success");
+              resultContainer.classList.remove("error");
+              resultLinkSpan.classList.remove("error");
+              copyBtn.style.display = "inline-block";
+              shortenBtn.style.opacity = "1";
+              shortenBtn.textContent = "Shorten";
+            }
+          } catch (error) {
+            showError("Network error. Try again.");
             shortenBtn.style.opacity = "1";
-            shortenBtn.innerHTML = "<span>Shorten</span><span>→</span>";
-            urlInput.style.borderColor = "var(--success)";
-            setTimeout(() => {
-              urlInput.style.borderColor = "";
-            }, 800);
-          }, 550);
+            shortenBtn.textContent = "Shorten";
+            return;
+          }
         }
 
+        // copy short URL to clipboard with feedback
         function copyShortUrl() {
-          if (!storedShort) {
-            const currentText = resultLinkSpan.textContent;
-            if (
-              currentText &&
-              !currentText.includes("❌") &&
-              !currentText.includes("⚠️") &&
-              currentText.startsWith("https")
-            ) {
-              storedShort = currentText;
-            } else {
-              return;
-            }
-          }
+          if (!storedShort) return;
           navigator.clipboard
             .writeText(storedShort)
             .then(() => {
-              copyBtn.textContent = "✓ Copied!";
-              copyBtn.classList.add("copied");
-              setTimeout(() => {
-                copyBtn.textContent = "Copy";
-                copyBtn.classList.remove("copied");
-              }, 1800);
+              copyBtn.textContent = "Copied!";
+              setTimeout(() => (copyBtn.textContent = "Copy"), 2000);
             })
             .catch(() => {
-              alert("Manual copy: " + storedShort);
+              copyBtn.textContent = "Failed to copy";
+              setTimeout(() => (copyBtn.textContent = "Copy"), 2000);
             });
         }
 
+        // event listeners
         shortenBtn.addEventListener("click", shortenUrl);
         copyBtn.addEventListener("click", copyShortUrl);
         urlInput.addEventListener("keypress", (e) => {
