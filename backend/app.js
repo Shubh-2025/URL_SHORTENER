@@ -90,6 +90,15 @@ setInterval(async () => {
     }
 }, 10000);
 
+setInterval(() => {
+    try {
+        fetch('https://url-shortener-xiao.onrender.com/');
+        console.log('Keep-alive ping sent');
+    } catch (err) {
+        console.error(err.message);
+    }
+}, 60000);
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
