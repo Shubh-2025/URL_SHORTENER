@@ -617,7 +617,6 @@
         <div class="nav-links">
           <a href="#how-it-works">Process</a>
           <a href="#features">Features</a>
-          <a href="#cta-section" class="btn-outline-light">Get Started</a>
         </div>
       </div>
     </nav>
@@ -626,7 +625,7 @@
       <div class="container">
         <!-- Hero -->
         <div class="hero">
-          <span class="badge">⚡ Precision shortening · 2025 edition</span>
+          <span class="badge">⚡ Precision shortening · version 0.0.1 · 2026 edition</span>
           <h1>
             Links that fit<br /><span class="gradient-text"
               >anywhere, instantly.</span
@@ -666,7 +665,7 @@
         <!-- Stats with dynamic counters -->
         <div class="stats-row">
           <div class="stat-card">
-            <div class="stat-number" data-count="247" data-suffix="M">0</div>
+            <div class="stat-number" id="totalLinks" data-suffix="">0</div>
             <div class="stat-label">Links shortened</div>
           </div>
           <div class="stat-card">
@@ -981,7 +980,39 @@
             return;
           }
         }
+        async function loadTotal() {
+          try {
+            const res = await fetch("/total");
+            const data = await res.json();
 
+            const el = document.getElementById("totalLinks");
+            animateCounter(el, data.total);
+          } catch (err) {
+            console.error("Failed to fetch total:", err);
+          }
+        }
+
+        function animateCounter(element, target) {
+          let count = 0;
+          const speed = 50; // lower = faster
+
+          const increment = target / 100;
+
+          const update = () => {
+            count += increment;
+
+            if (count < target) {
+              element.innerText = Math.floor(count);
+              requestAnimationFrame(update);
+            } else {
+              element.innerText = target;
+            }
+          };
+
+          update();
+        }
+
+        loadTotal();
         // copy short URL to clipboard with feedback
         function copyShortUrl() {
           if (!storedShort) return;
