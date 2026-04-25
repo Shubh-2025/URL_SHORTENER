@@ -7,6 +7,16 @@ import { randomPassword } from "chatujs";
 import path from "path";
 import fs from "node:fs/promises";
 
+let map = "";
+try {
+    const data = await fs.readFile('total.txt', 'utf8');
+    const entries = JSON.parse(data);
+    map = new Map(entries);
+} catch (err) {
+    console.error('Read failed:', err);
+    process.exit(1);
+}
+
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT;
@@ -14,8 +24,6 @@ console.log("PORT:", PORT);
 
 app.use(express.json());
 app.use(cors());
-
-let map = new Map();
 
 const __filename = fileURLToPath(import.meta.url);
 // console.log(import.meta);
@@ -41,7 +49,8 @@ app.post('/shorten', async (req, res) => {
     }
     // await client.set(shortId, longUrl);
     map.set(shortId, longUrl);
-    res.status(200).json({ shortUrl: `http://${req.headers.host.split(":")[0]}:${PORT}/${shortId}` });
+    // res.status(200).json({ shortUrl: `http://${req.headers.host.split(":")[0]}:${PORT}/${shortId}` });
+    res.status(200).json({ shortUrl: `https://8lg6j0zl-3333.inc1.devtunnels.ms/${shortId}` });
 });
 
 app.get('/:shortId', async (req, res) => {
