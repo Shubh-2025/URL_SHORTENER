@@ -625,7 +625,9 @@
       <div class="container">
         <!-- Hero -->
         <div class="hero">
-          <span class="badge">⚡ Precision shortening · version 0.0.1 · 2026 edition</span>
+          <span class="badge"
+            >⚡ Precision shortening · version 0.0.1 · 2026 edition</span
+          >
           <h1>
             Links that fit<br /><span class="gradient-text"
               >anywhere, instantly.</span
@@ -982,11 +984,14 @@
         }
         async function loadTotal() {
           try {
-            const res = await fetch("/api/total");
-            const data = await res.json();
-
-            const el = document.getElementById("totalLinks");
-            animateCounter(el, data.total);
+            const response = await fetch("/api/total");
+            if (!response.ok) {
+              throw new Error("Failed to fetch total");
+            } else {
+              const data = await res.json();
+              const el = document.getElementById("totalLinks");
+              animateCounter(el, data.total);
+            }
           } catch (err) {
             console.error("Failed to fetch total:", err);
           }
