@@ -929,6 +929,8 @@
         function showError(message) {
           resultContainer.classList.add("show", "error");
           resultLinkSpan.textContent = message;
+          resultContainer.classList.remove("success");
+          resultLinkSpan.classList.remove("success");
           resultLinkSpan.classList.add("error");
           copyBtn.style.display = "none";
           resultContainer.classList.remove("success");
