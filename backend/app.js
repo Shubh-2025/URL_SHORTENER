@@ -2,7 +2,7 @@ import express from "express"
 import dotenv from "dotenv"
 import cors from "cors"
 import { fileURLToPath } from 'url';
-import client from "./db.js"
+// import client from "./db.js"
 import { randomPassword } from "chatujs";
 import path from "path";
 
@@ -13,6 +13,8 @@ console.log("PORT:", PORT);
 
 app.use(express.json());
 app.use(cors());
+
+let map = new Map();
 
 const __filename = fileURLToPath(import.meta.url);
 // console.log(import.meta);
@@ -30,18 +32,21 @@ app.post('/shorten', async (req, res) => {
     let shortId = "";
     while (true) {
         shortId = randomPassword(6);
-        const data = await client.get(shortId);
+        // const data = await client.get(shortId);
+        const data = map.has(shortId);
         if (!data) {
             break;
         }
     }
-    await client.set(shortId, longUrl);
+    // await client.set(shortId, longUrl);
+    map.set(shortId, longUrl);
     res.json({ shortUrl: `http://${req.headers.host.split(":")[0]}:${PORT}/${shortId}` });
 });
 
 app.get('/:shortId', async (req, res) => {
     const { shortId } = req.params;
-    const longUrl = await client.get(shortId);
+    // const longUrl = await client.get(shortId);
+    const longUrl = map.get(shortId);
     if (longUrl) {
         res.redirect(longUrl);
     } else {
