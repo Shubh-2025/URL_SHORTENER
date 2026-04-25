@@ -41,7 +41,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 
-app.post('/shorten', async (req, res) => {
+app.post('/api/shorten', async (req, res) => {
     const { longUrl } = req.body;
     let shortId = "";
     while (true) {

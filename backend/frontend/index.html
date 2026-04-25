@@ -951,7 +951,7 @@
           shortenBtn.style.opacity = "0.8";
           shortenBtn.textContent = "Processing...";
           try {
-            let response = await fetch("/shorten", {
+            let response = await fetch("/api/shorten", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ longUrl: longUrl }),
@@ -982,7 +982,7 @@
         }
         async function loadTotal() {
           try {
-            const res = await fetch("/total");
+            const res = await fetch("/api/total");
             const data = await res.json();
 
             const el = document.getElementById("totalLinks");
