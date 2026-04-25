@@ -50,7 +50,7 @@ app.post('/shorten', async (req, res) => {
     // await client.set(shortId, longUrl);
     map.set(shortId, longUrl);
     // res.status(200).json({ shortUrl: `http://${req.headers.host.split(":")[0]}:${PORT}/${shortId}` });
-    res.status(200).json({ shortUrl: `https://8lg6j0zl-3333.inc1.devtunnels.ms/${shortId}` });
+    res.status(200).json({ shortUrl: `https://url-shortener-xiao.onrender.com/${shortId}` });
 });
 
 app.get('/:shortId', async (req, res) => {

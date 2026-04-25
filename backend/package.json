@@ -8,7 +8,8 @@
   "main": "app.js",
   "scripts": {
     "test": "chatu",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "start": "node app.js"
   },
   "dependencies": {
     "chatujs": "^1.2.4",
