@@ -69,15 +69,8 @@ app.get('/:shortId', async (req, res) => {
     }
 });
 
-setInterval(async () => {
-    try {
-        await fs.writeFile('total.txt', JSON.stringify([...map]), 'utf8');
-    } catch (err) {
-        console.error('Append failed:', err);
-    }
-}, 30000);
-
-app.get('/total', async (req, res) => {
+app.get('/api/total', async (req, res) => {
+    // console.log("Total count requested");
     try {
         const data = await fs.readFile('total.txt', 'utf8');
         const entries = JSON.parse(data);
@@ -88,6 +81,14 @@ app.get('/total', async (req, res) => {
         res.status(500).json({ error: 'Failed to read total count' });
     }
 });
+
+setInterval(async () => {
+    try {
+        await fs.writeFile('total.txt', JSON.stringify([...map]), 'utf8');
+    } catch (err) {
+        console.error('Append failed:', err);
+    }
+}, 10000);
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
