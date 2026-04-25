@@ -15,7 +15,7 @@ A simple web application to shorten long URLs into compact, shareable links.
 
 ## Installation
 1. Clone the repository: `git clone https://github.com/Shubh-2025/URL_SHORTENER`
-2. Navigate to the project folder: `cd URL_SHORTENER`
+2. Navigate to the project folder: `cd URL_SHORTENER/backend`
 3. Install dependencies: `npm install` (assuming Node.js)
 4. Start the server: `npm start`
 
