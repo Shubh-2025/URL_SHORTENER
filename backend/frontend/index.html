@@ -988,8 +988,9 @@
             if (!response.ok) {
               throw new Error("Failed to fetch total");
             } else {
-              const data = await res.json();
+              const data = await response.json();
               const el = document.getElementById("totalLinks");
+              // console.log(data.total);
               animateCounter(el, data.total);
             }
           } catch (err) {
