@@ -101,7 +101,7 @@ setInterval(() => {
 
 setInterval(() => {
     map.clear();
-}, 1000 * 60 * 60 * 24 * 3); // Clear the map every 24 hours
+}, 1000 * 60 * 60 * 24 * 3); // Clear the map every 72 hours
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
