@@ -70,7 +70,7 @@
 
 2. **Navigate to the project folder**
    ```bash
-   cd URL_SHORTENER
+   cd backend
    ```
 
 3. **Install dependencies**
