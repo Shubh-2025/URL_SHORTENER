@@ -7,20 +7,22 @@ import { randomPassword } from "chatujs";
 import path from "path";
 import fs from "node:fs/promises";
 
-let map = "";
-try {
-    const data = await fs.readFile('total.txt', 'utf8');
-    const entries = JSON.parse(data);
-    if (Array.isArray(entries)) {
-        map = new Map(entries);
-    } else {
-        console.error('Data format is incorrect. Expected an array of entries.');
-        map = new Map();
-    }
-} catch (err) {
-    console.error('Read failed:', err);
-    process.exit(1);
-}
+// let map = "";
+// try {
+//     const data = await fs.readFile('total.txt', 'utf8');
+//     const entries = JSON.parse(data);
+//     if (Array.isArray(entries)) {
+//         map = new Map(entries);
+//     } else {
+//         console.error('Data format is incorrect. Expected an array of entries.');
+//         map = new Map();
+//     }
+// } catch (err) {
+//     console.error('Read failed:', err);
+//     process.exit(1);
+// }
+
+const map = new Map();
 
 dotenv.config();
 const app = express();
@@ -71,24 +73,25 @@ app.get('/:shortId', async (req, res) => {
 
 app.get('/api/total', async (req, res) => {
     // console.log("Total count requested");
-    try {
-        const data = await fs.readFile('total.txt', 'utf8');
-        const entries = JSON.parse(data);
-        const total = entries.length;
-        res.status(200).json({ total: total });
-    } catch (err) {
-        console.error('Read failed:', err);
-        res.status(500).json({ error: 'Failed to read total count' });
-    }
+    // try {
+    //     const data = await fs.readFile('total.txt', 'utf8');
+    //     const entries = JSON.parse(data);
+    //     const total = entries.length;
+    //     res.status(200).json({ total: total });
+    // } catch (err) {
+    //     console.error('Read failed:', err);
+    //     res.status(500).json({ error: 'Failed to read total count' });
+    // }
+    res.status(200).json({ total: map.size });
 });
 
-setInterval(async () => {
-    try {
-        await fs.writeFile('total.txt', JSON.stringify([...map]), 'utf8');
-    } catch (err) {
-        console.error('Append failed:', err);
-    }
-}, 10000);
+// setInterval(async () => {
+//     try {
+//         await fs.writeFile('total.txt', JSON.stringify([...map]), 'utf8');
+//     } catch (err) {
+//         console.error('Append failed:', err);
+//     }
+// }, 10000);
 
 setInterval(() => {
     try {
