@@ -14,7 +14,7 @@ try {
     map = new Map(entries);
 } catch (err) {
     console.error('Read failed:', err);
-    process.exit(1);
+    map = new Map();
 }
 
 dotenv.config();
